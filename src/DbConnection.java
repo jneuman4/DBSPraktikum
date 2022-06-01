@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class DbConnection {
 
     private Connection con;
+    private int employee_id;
 
     public DbConnection() throws SQLException, ClassNotFoundException {
         Class.forName("oracle.jdbc.OracleDriver");
@@ -26,6 +27,7 @@ public class DbConnection {
         pStmt.setString(2, pwd);
         ResultSet rs = pStmt.executeQuery();
         if (rs.next()) {
+            employee_id = rs.getInt(1);
             return true;
         } else {
             return false;
@@ -96,5 +98,107 @@ public class DbConnection {
         cStmt.execute();
         String returnValue = cStmt.getString(1);
         System.out.println(returnValue);
+    }
+
+    public void testergEingeben() throws SQLException{
+        String sql = "UPDATE tests SET result = ?, result_date = ? WHERE test_id = ?";
+
+        PreparedStatement pStmt = con.prepareCall(sql);
+
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Ergebnis eingeben: (p|n)");
+        String erg = sc.next();
+        if (erg.equalsIgnoreCase("p")){
+            pStmt.setString(1, "positive");
+        }else if (erg.equalsIgnoreCase("n")){
+            pStmt.setString(1, "negative");
+        }else {
+            System.out.println("Falsche Eingabe!");
+            return;
+        }
+
+        pStmt.setDate(2, new java.sql.Date(System.currentTimeMillis()));
+        System.out.println("Bitte geben Sie eine Test Id ein: ");
+        int tId = sc.nextInt();
+        pStmt.setInt(3, tId);
+
+        pStmt.executeQuery();
+        System.out.println("Ergebnis eingefügt!");
+
+    }
+
+    public void testAnlegen() throws SQLException{
+        String sql = "{? = call create_Test(?, ?, ?)}";
+        CallableStatement cStmt = con.prepareCall(sql);
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Bitte geben Sie eine Termin Id an:");
+        int tId = sc.nextInt();
+        cStmt.setInt(2, tId);
+        cStmt.setString(3, "PCR");
+        cStmt.setInt(4, employee_id);
+        cStmt.registerOutParameter(1, Types.VARCHAR);
+
+        cStmt.execute();
+
+        System.out.println(cStmt.getString(1));
+
+
+    }
+
+    public void terminLoeschen() throws SQLException{
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Geben Sie die Id vom Termin ein der gelöscht werden soll:");
+        try{
+            int del = Integer.parseInt(sc.next());
+
+            String sql = "Delete from appointments where APPOINTMENTS_ID = ?";
+            PreparedStatement pStmt = con.prepareStatement(sql);
+            pStmt.setInt(1, del);
+            pStmt.executeQuery();
+            System.out.println("Termin gelöscht");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Falsche Eingabe!");
+        }
+
+    }
+
+    public void alleTermine() throws SQLException{
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Alle Termine(a) oder nur Gebuchte(g)?");
+        String auswahl = sc.next();
+        String sql = "";
+        if (auswahl.equalsIgnoreCase("g")){
+             sql = "select * from appointments where CUSTOMER_ID IS NOT NULL ORDER by APPOINTMENTS_ID";
+        }else{
+             sql = "select * from appointments ORDER by APPOINTMENTS_ID";
+        }
+
+        PreparedStatement pStmt = con.prepareStatement(sql);
+        ResultSet rs = pStmt.executeQuery();
+
+        ResultSet count = con.prepareStatement(sql.replace("*", "count(*)")).executeQuery();
+        count.next();
+        System.out.println("Gefundene Termine: " + count.getInt(1));
+
+        int counter = 0;
+        while (rs.next()){
+            System.out.println("ID: " + rs.getInt(1) + ", Kunde: " + rs.getInt(2)+ ", Datum: " + rs.getString(3));
+            counter++;
+            if(counter%10 == 0){
+                while (true){
+                    System.out.print("Nächste anzeigen(y|n):");
+                    String in = sc.next();
+                    if (in.equalsIgnoreCase("y")){
+                        break;
+                    }else if(in.equalsIgnoreCase("n")){
+                        return;
+                    }else{
+                        System.out.println("Bitte nur y oder n eingeben");
+                    }
+                }
+            }
+        }
     }
 }

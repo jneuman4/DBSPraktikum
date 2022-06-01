@@ -17,11 +17,11 @@ public class Program {
 
             System.out.println("Bitte Melden Sie sich an:");
             System.out.print("Name: ");
-            //name = sc.next();
-            String name = "Alex";
+            name = sc.next();
+            //name = "Alex";
             System.out.print("Passwort: ");
-            //pwd = sc.next();
-            String pwd = "1234";
+            pwd = sc.next();
+            //pwd = "1234";
 
             while (true){
                 boolean login = con.mitarbeiterLogin(name, pwd);
@@ -38,7 +38,6 @@ public class Program {
 
             }
 
-            //New Code
             //Menu
             menu: while (true){
                 System.out.println("--------- Menü ---------");
@@ -50,20 +49,22 @@ public class Program {
                 System.out.println("Testergebnis eintragen: 5");
                 System.out.println("Termine erstellen: 6");
                 System.out.println("Profil anzeigen: 7");
-                System.out.println("Programm beenden: 8");
+                System.out.println("Alle Termine anzeigen: 8");
+                System.out.println("Programm beenden: 9");
 
                 try {
                     int eingabe = Integer.parseInt(sc.next());
-                    if (eingabe < 1 || eingabe > 8) throw new NumberFormatException();
+                    if (eingabe < 1 || eingabe > 9) throw new NumberFormatException();
                     switch (eingabe){
                         case 1: zeigeStatistic(); break;
                         case 2: tagestermine(); break;
-                        case 3: terminLoeschen(); break;    //TODO
-                        case 4: testAnlegen(); break;       //TODO
+                        case 3: terminLoeschen(); break;
+                        case 4: testAnlegen(); break;
                         case 5: testergEingeben(); break;   //TODO
                         case 6: termineErstellen(); break;
                         case 7: profilZeigen(); break;
-                        case 8: break menu;
+                        case 8: alleTermine(); break;
+                        case 9: break menu;
                         default:
                             System.out.println("Falsche Eingabe!");
                             break;
@@ -83,6 +84,15 @@ public class Program {
             System.out.println("Verbindung mit der Datenbank fehlgeschlagen. Programm kann nicht ausgeführt werden!");
         }
 
+    }
+
+    private static void alleTermine() {
+        System.out.println("--- Alle Termine anzeigen ---");
+        try {
+            con.alleTermine();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void profilZeigen() {
@@ -105,14 +115,29 @@ public class Program {
 
     private static void testergEingeben() {
         System.out.println("--- Testergebnis Eingeben ---");
+        try {
+            con.testergEingeben();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void testAnlegen() {
         System.out.println("--- Test anlegen ---");
+        try {
+            con.testAnlegen();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void terminLoeschen() {
         System.out.println("--- Termin Löschen ---");
+        try {
+            con.terminLoeschen();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void tagestermine() {
