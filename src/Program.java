@@ -14,6 +14,8 @@ public class Program {
 
         try {
             con = new DbConnection();
+            System.out.println("Willkommen bei Coronah");
+            System.out.println("----------------------");
 
             System.out.println("Bitte Melden Sie sich an:");
             System.out.print("Name: ");

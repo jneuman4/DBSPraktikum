@@ -21,7 +21,7 @@ public class DbConnection {
 
     public boolean mitarbeiterLogin(String name, String pwd) throws SQLException {
         String sql = "select * from employee where name = ? and password = ?";
-        System.out.println("select * from employee where name = "+name+" and password = "+pwd);
+        //System.out.println("select * from employee where name = "+name+" and password = "+pwd);
         PreparedStatement pStmt = con.prepareStatement(sql);
         pStmt.setString(1, name);
         pStmt.setString(2, pwd);
@@ -35,15 +35,15 @@ public class DbConnection {
     }
 
     public void profilZeigen(String name, String pwd) throws SQLException {
-        String sql = "select * from employee where name = ? and password = ?";
+        String sql = "select BIRTHDATE, POSTALCODE, TESTCENTER_ID from employee where name = ? and password = ?";
         PreparedStatement pStmt = con.prepareStatement(sql);
         pStmt.setString(1, name);
         pStmt.setString(2, pwd);
         ResultSet rs = pStmt.executeQuery();
         if (rs.next()) {
-            String birthday = rs.getString(4);
-            int plz = rs.getInt(5);
-            int tcId = rs.getInt(6);
+            String birthday = rs.getString(1);
+            int plz = rs.getInt(2);
+            int tcId = rs.getInt(3);
             System.out.println("Gebutstag: "+ birthday);
             System.out.println("PLZ: "+ plz);
             System.out.println("Testcenter Id: "+ tcId);
